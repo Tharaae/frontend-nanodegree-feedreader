@@ -107,27 +107,35 @@ $(function() {
      * a single .entry element within the .feed container.
      */
     it('should create at least one entry', function(done) {
-      expect($('.feed').find('.entry').length).not.toBe(0);
+      expect($('.feed .entry').length).not.toBe(0);
       done();
     });
   });
 
   /* A test suite for tests related to New Feed Selection */
   describe('New Feed Selection', function() {
-    //get initial header title text
-    const initialTitle = $('.header-title').text();
-
-    // Second feed index
-    // (can be any feed other than the first that is already loaded)
-    const anotherFeedIndex = 1;
+    // variables to hold initial feed and new feed
+    let initialFeed;
+    let newFeed;
 
     /* loadFeed() is asynchronous so this test will require
      * the use of Jasmine's beforeEach and asynchronous done() function.
      */
     beforeEach(function(done) {
-      // load the selected feed
-      loadFeed(anotherFeedIndex, function() {
-        done();
+
+      // load the first feed
+      loadFeed(0, function() {
+
+        // after first feed load succeed, set initial feed
+        initialFeed = $('.feed').html();
+
+        // and load the second feed
+        loadFeed(1, function() {
+
+          // after second feed load succeed, set the new feed
+          newFeed = $('.feed').html();
+          done();
+        });
       });
     });
 
@@ -136,11 +144,13 @@ $(function() {
      */
     it('should actually change content', function(done) {
 
-      // check that the header title changed after selecting another feed
-      expect($('.header-title').text()).not.toBe(initialTitle);
+      // check that the new feed is different than the initial feed
+      expect(newFeed).not.toBe(initialFeed);
 
-      // check that the header title is correctly set to the selected feed name
-      expect($('.header-title').text()).toBe(allFeeds[anotherFeedIndex].name);
+      /* check that the new content is correctly set to the new feed
+       * by checking that the header title is correctly set to the new feed name
+       */
+      expect($('.header-title').text()).toBe(allFeeds[1].name);
       done();
     });
   });
